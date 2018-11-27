@@ -18,10 +18,10 @@ param(
 
 #>
 
-# if ($hostaddress -notlike "*.local") {
-#     write-host -ForegroundColor yellow "Adding .local to $hostaddress"
-#     $hostaddress = $hostaddress + '.local'
-# }
+if ($hostaddress -notlike "*.local") {
+    write-host -ForegroundColor yellow "Adding .local to $hostaddress"
+    $hostaddress = $hostaddress + '.local'
+}
 
 $statcounter = 0
 
