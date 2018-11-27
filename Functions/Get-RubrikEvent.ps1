@@ -50,7 +50,7 @@ function Get-RubrikEvent {
     $endpointURI = $endpointURI.Replace(':','%3A')
 
     if ($endpointURI[-1] -eq '&') {$endpointURI = $endpointURI.Substring(0,$endpointURI.Length-1)}
-    $endpointURI 
+    $endpointURI | write-verbose
     $jobdata = Invoke-RubrikRESTCall -Endpoint $endpointURI -Method GET -api internal -verbose
     $jobdata.data
 }
