@@ -9,14 +9,15 @@ param(
 
 <#  
     .SYNOPSIS
-    Connect to a rubrik endpoint and generate a discovery JSON. 
+    Create a Rubrik Bootstrap JSON
 
     .EXAMPLE
-    Export-RubrikDiscovery.ps1 -hostaddress RVM16CS013917
+    ./Create-RubrikJSON.ps1 -jsonfile RVM16CS013917.local.json
 
     or
 
-    Export-RubrikDiscovery.ps1 -hostaddress RVM16CS013917.local
+    ./Create-RubrikJSON.ps1 (without any paramters)
+
 
 #>
 
