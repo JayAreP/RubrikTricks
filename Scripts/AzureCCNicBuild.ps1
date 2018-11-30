@@ -65,7 +65,7 @@ for (
     $i++
 ) { 
     $nicname = $nicprefix + '-' + $i
-    if (Get-AzureRmNetworkInterface -Name $nicname -ResourceGroupName $rgselect) {
+    if (Get-AzureRmNetworkInterface -Name $nicname -ResourceGroupName $rgselect -ErrorAction SilentlyContinue) {
         Write-Host -ForegroundColor Yellow Network interface $nicname already exists in $vnselect`, using existing.
     } else {
         New-AzureRmNetworkInterface -Name $nicname -ResourceGroupName $rgselect -SubnetId $rsubnet.Id -Location $rvnet.location
