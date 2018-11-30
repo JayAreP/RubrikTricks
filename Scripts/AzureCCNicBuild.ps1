@@ -34,6 +34,7 @@ if (Get-AzureRmSubscription -ErrorAction SilentlyContinue) {
     Write-Host Azure connected.
     } else {
     Write-Host Please first connet to Azure via `(Connect-AzureRMAccount`)
+    exit
 }
 
 # Use menus to select ResourceGroup, Network, and Subnet. 
