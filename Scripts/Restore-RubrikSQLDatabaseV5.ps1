@@ -27,7 +27,7 @@ if ($dbfilepath -and !$logfilepath) {
 
 <# 
 A function here for adding a login to the script. You can actually construct the credential opbject however you like. 
-1. Log into the system that is running this script as the service account that execute the script. 
+1. Log into the system that is running this script as the service account that execute the script.  
 2. Create the rubrik credential object by typing: 
     $creds = get-credential 
     and then enter the rubrik username and password.
