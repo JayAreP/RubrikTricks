@@ -61,7 +61,7 @@ Invoke-RubrikRESTCall -Endpoint $endpointURI -Method POST
 # Validate and grab the Database
 
 try {
-    $rdb = Get-RubrikDatabase -Hostname $dbserver -Instance $instance -name $database | Get-RubrikDatabase -ea silentlycontinue}
+    $rdb = Get-RubrikDatabase -Hostname $dbserver -Instance $instance -Database $dbname | Get-RubrikDatabase -ErrorAction silentlycontinue}
 catch {
     write-host -ForegroundColor Red Could not acquire $database on $dbserver
     Exit}
@@ -88,7 +88,7 @@ $sourcedbfiles = Get-RubrikDatabaseFiles -id $SourceDBID -RecoveryDateTime $reco
 $targetdbfiles = @()
 foreach ($i in $sourcedbfiles) {
     $o = new-object psobject
-    $o | add-member -name logicalName -type noteproperty -value $i.logicalName
+    $o | add-member -name logicalName -type noteproperty -value $i.logicalName.Replace($dbname,$targetdbname)
     if ($dbfilepath) {
         if ($i.originalName -notlike "*.ldf") {$o | add-member -name exportPath -type noteproperty -value $dbfilepath}
         if ($i.originalName -like "*.ldf") {$o | add-member -name exportPath -type noteproperty -value $logfilepath}
