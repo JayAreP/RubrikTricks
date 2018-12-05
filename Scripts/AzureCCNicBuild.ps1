@@ -42,7 +42,7 @@ if (Get-AzureRmSubscription -ErrorAction SilentlyContinue) {
 $rgarray = Get-AzureRmResourceGroup
 $rgselect = Build-MenuFromArray -array $rgarray -property ResourceGroupName -message "Select Resource Group"
 
-$vnarray = Get-AzureRmVirtualNetwork -name RubrikTestvnet01 -ResourceGroupName $rgselect -WarningAction silentlyContinue
+$vnarray = Get-AzureRmVirtualNetwork -ResourceGroupName $rgselect -WarningAction silentlyContinue
 $vnselect = Build-MenuFromArray -array $vnarray -property Name -message "Select Virtual Network"
 
 $snarray =  Get-AzureRmVirtualNetwork -name $vnselect -ResourceGroupName $rgselect -WarningAction silentlyContinue| Get-AzureRmVirtualNetworkSubnetConfig -WarningAction silentlyContinue
