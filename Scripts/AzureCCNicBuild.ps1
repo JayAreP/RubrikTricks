@@ -73,3 +73,27 @@ for (
     }
 }
 
+$storageaccounts = Get-AzureRMStorageAccount -ResourceGroupName $rgselect | Where-Object {$_.Location -eq $rvnet.location -and $_.Sku.Name -match "LRS"}
+
+Write-Host -ForegroundColor green `n`n'The following Storage acounts qualify for this deployment:'
+$storageaccounts | select StorageAccountName,Location
+$sacreate = Read-Host `n'Would you like to create a new Storage Account? [y,N]' 
+$sacreate = $sacreate.tolower()
+while("y","n" -notcontains $sacreate)
+{
+    if (!$sacreate) {$sacreate = 'y'}
+    else {
+        $sacreate = Read-Host `n'Would you like to create a new Storage Account? [y,N]' 
+    }
+}
+if ($sacreate -eq "y") {
+    $saname = Read-Host `n'Please type in the name for the new Storage Account'
+    try {
+        $saname = $saname.tolower()
+        New-AzureRmStorageAccount -ResourceGroupName $rgselect -Name $saname -Location $rvnet.location -SkuName Standard_LRS -Kind Storage 
+    } catch {
+        Write-Host "boo"
+    }
+}
+
+
