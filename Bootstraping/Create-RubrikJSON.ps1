@@ -28,7 +28,6 @@ if ($nodeCSV) {
     [int]$totalnodes = $jsdata.count
 }
 
-
 if ($jsonfile) {
     [bool]$inputfile = $true
     $jsdata = Get-Content $jsonfile | ConvertFrom-Json
@@ -97,9 +96,7 @@ function rbkcluster {
             }
         }
 
-
     }
-
 
     write-host -ForegroundColor green "--- Cluster configuration ---"
 
@@ -174,8 +171,6 @@ function rbkcluster {
             write-verbose $script:MGTOSN
     }
 
-   
-
 }
 
 <# --- Node CSV import --- #>
@@ -185,9 +180,7 @@ function rbknodecsv {
 
 }
 
-
 <# --- Node Build Function --- #>
-
 
 function rbknodebuild {
 
@@ -291,9 +284,6 @@ if ($script:MGTOGW) {
 
     Clear-Host
 
-
-
-
 }
 
 function rbkjsoncreate {
@@ -312,8 +302,6 @@ function rbkjsoncreate {
         }
     }
 
-
-    
     if ($confirm -eq 'y') {
 
 
@@ -340,14 +328,9 @@ function rbkjsoncreate {
             write-host -ForegroundColor yellow `n "Aborting json creation"`n
             break  
         }
-    
-
 }
 
-
-
     rbkcluster
-
 
 $vcluster = new-object psobject 
 $vcluster | Add-Member -Name "Cluster name" -Type noteproperty -value $script:clsname
