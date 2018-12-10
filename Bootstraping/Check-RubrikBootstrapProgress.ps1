@@ -5,19 +5,6 @@ param(
     [string] $id = "1"
 )
 
-<#  
-    .SYNOPSIS
-    Connect to a rubrik endpoint and generate a discovery JSON. 
-
-    .EXAMPLE
-    Export-RubrikDiscovery.ps1 -hostaddress RVM16CS013917
-
-    or
-
-    Export-RubrikDiscovery.ps1 -hostaddress RVM16CS013917.local
-
-#>
-
 if ($hostaddress -notlike "*.local") {
     write-host -ForegroundColor yellow "Adding .local to $hostaddress"
     $hostaddress = $hostaddress + '.local'
