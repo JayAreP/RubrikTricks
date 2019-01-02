@@ -14,7 +14,7 @@ param(
 <#
 .SYNOPSIS
 
-Creates the managed volume and generates the fstab entries for the linux host. 
+Creates the managed volume and generates the fstab entries for the linux host.  
 
 .EXAMPLE
 
