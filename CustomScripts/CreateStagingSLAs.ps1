@@ -82,7 +82,7 @@ function Set-RubrikSLAArchiveLocation {
 $jobstats = Invoke-RubrikRESTCall -Endpoint 'archive/location' -Method GET -api internal
 $archives = $jobstats.data
 $archivelocal = Build-MenuFromArray -array $archives -property name -message "Select Archive Location"
-$archivestats = $archives | Where-Object {$_.name -eq $archivelocal}
+# $archivestats = $archives | Where-Object {$_.name -eq $archivelocal}
 
 $start = 1
 $NumMonths = $NumMonths + 1
