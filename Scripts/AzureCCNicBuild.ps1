@@ -90,9 +90,12 @@ if ($sacreate -eq "y") {
     $saname = Read-Host `n'Please type in the name for the new Storage Account'
     try {
         $saname = $saname.tolower()
+        Write-Host -ForegroundColor yellow  New-AzureRmStorageAccount -ResourceGroupName $rgselect -Name $saname -Location $rvnet.location -SkuName Standard_LRS -Kind Storage 
         New-AzureRmStorageAccount -ResourceGroupName $rgselect -Name $saname -Location $rvnet.location -SkuName Standard_LRS -Kind Storage 
     } catch {
-        Write-Host "boo"
+        Write-Host "Cannot create storage account" 
+        Write-Host "Use this syntax to manually create:" `n
+        Write-Host -ForegroundColor yellow  New-AzureRmStorageAccount -ResourceGroupName $rgselect -Name $saname -Location $rvnet.location -SkuName Standard_LRS -Kind Storage 
     }
 }
 
