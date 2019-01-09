@@ -52,8 +52,6 @@ if ($usescriptcredentials) {
 
 $targetdbserver = (Get-RubrikHost -name $targetdbserver | where-object {$_.hostname -eq $targetdbserver}).hostname
 
-# replace below with code that I'll send you later to refresh the host. 
-
 $targetdbserverid = (Get-RubrikHost -name $targetdbserver | where-object {$_.hostname -eq $targetdbserver}).id
 $endpointURI = 'host/' + $targetdbserverid + '/refresh'
 Invoke-RubrikRESTCall -Endpoint $endpointURI -Method POST
