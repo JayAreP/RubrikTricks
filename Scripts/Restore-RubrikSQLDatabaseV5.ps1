@@ -15,7 +15,7 @@
     [string] $dbfilepath,
     [parameter()]
     [string] $logfilepath,
-	[Parameter()]
+    [Parameter()]
     [switch] $uselatestsnapshot,
     [Parameter()]
     [switch] $usescriptcredentials
