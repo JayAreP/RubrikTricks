@@ -112,7 +112,7 @@ foreach ($i in $targetdbfiles) {
     }
 }
 
-$exportrequest = Export-RubrikDatabase -TargetFilePaths $targetdbfiles -id $SourceDBID -targetInstanceId $TargetInstanceID -targetDatabaseName $targetdbname -RecoveryDateTime $recoverdate -MaxDataStreams 4 -confirm:0 -finishrecovery
+$exportrequest = Export-RubrikDatabase -TargetFilePaths $targetdbfilesHA -id $SourceDBID -targetInstanceId $TargetInstanceID -targetDatabaseName $targetdbname -RecoveryDateTime $recoverdate -MaxDataStreams 4 -confirm:0 -finishrecovery
 
 $exportrequest.id  | out-file .\export.log
-# Get-RubrikRequest -id $exportrequest.id -type mssql
+write-host -ForegroundColor yellow Use the following to check status `n`nGet-RubrikRequest -id $exportrequest.id -type mssql
