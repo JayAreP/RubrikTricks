@@ -9,6 +9,8 @@
     [string] $instance = "MSSQLSERVER",
     [parameter()]
     [string] $targetdbname = $database,
+    [parameter()]
+    [string] $targetinstance = "MSSQLSERVER",
     [parameter(mandatory)]
     [string] $rubrik,
     [parameter()]
@@ -86,14 +88,28 @@ $sourcedbfiles = Get-RubrikDatabaseFiles -id $SourceDBID -RecoveryDateTime $reco
 $targetdbfiles = @()
 foreach ($i in $sourcedbfiles) {
     $o = new-object psobject
-    $o | add-member -name logicalName -type noteproperty -value $i.logicalName.Replace($dbname,$targetdbname)
+    $o | add-member -name logicalName -type noteproperty -value $i.logicalName
     if ($dbfilepath) {
         if ($i.originalName -notlike "*.ldf") {$o | add-member -name exportPath -type noteproperty -value $dbfilepath}
         if ($i.originalName -like "*.ldf") {$o | add-member -name exportPath -type noteproperty -value $logfilepath}
     } else {
         $o | add-member -name exportPath -type noteproperty -value $i.originalPath
     }
+    if ($targetdbname) {
+        $o | add-member -name newFilename -type noteproperty -value $i.originalName.replace($dbname,$targetdbname)
+        $o | add-member -name newLogicalName -type noteproperty -value $i.logicalName.replace($dbname,$targetdbname)
+    }
     $targetdbfiles  += $o
+}
+
+$targetdbfilesHA = @()
+foreach ($i in $targetdbfiles) {
+    $targetdbfilesHA += @{
+        logicalName = $i.logicalName
+        exportPath = $i.exportPath
+        newFilename = $i.newFilename
+        newLogicalName = $i.newLogicalName
+    }
 }
 
 $exportrequest = Export-RubrikDatabase -TargetFilePaths $targetdbfiles -id $SourceDBID -targetInstanceId $TargetInstanceID -targetDatabaseName $targetdbname -RecoveryDateTime $recoverdate -MaxDataStreams 4 -confirm:0 -finishrecovery
