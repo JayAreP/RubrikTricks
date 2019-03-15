@@ -4,13 +4,14 @@ param (
     [parameter(mandatory)]
     [datetime] $end,
     [parameter(mandatory)]
-    [string] $clustername
+    [string] $clustername,
+    [parameter(mandatory)]
+    [string] $vmname
 )
 
 <#  
     .SYNOPSIS
     Generate CSV files for VMMS events from all nodes in the specified cluster
-
 
     .EXAMPLE
     Find-VMMSEvents.ps1 -start "3/11/2019 3:00 AM" -end "3/14/2019 5:00 PM" -cluster amer2-hvc
@@ -19,11 +20,13 @@ param (
 #>
 
 $clusternodes = (get-clusternode -Cluster $clustername).name
+$options = @{LogName ="Microsoft-Windows-Hyper-V-VMMS*"; StartTime = (get-date $start); EndTime = (get-date $end)}
 
 if ($clusternodes) {
     foreach ($i in $clusternodes) {
-        $events = Get-WinEvent -FilterHashTable @{LogName ="Microsoft-Windows-Hyper-V-VMMS*"; StartTime = (get-date $start); EndTime = (get-date $end)} -ComputerName $i
+        $events = Get-WinEvent -FilterHashTable $options -ComputerName $i
         $filename = $i + '.csv'
+        if ($vmname) {$events = $events | where-object {$_.message -match $vmname}}
         $events | Export-Csv -NoTypeInformation -Path $filename
     }
 } else {
