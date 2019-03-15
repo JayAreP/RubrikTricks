@@ -5,7 +5,7 @@ param (
     [datetime] $end,
     [parameter(mandatory)]
     [string] $clustername,
-    [parameter(mandatory)]
+    [parameter()]
     [string] $vmname
 )
 
