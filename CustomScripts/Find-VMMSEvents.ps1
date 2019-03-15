@@ -14,7 +14,7 @@ param (
     Generate CSV files for VMMS events from all nodes in the specified cluster
 
     .EXAMPLE
-    Find-VMMSEvents.ps1 -start "3/11/2019 3:00 AM" -end "3/14/2019 5:00 PM" -cluster amer2-hvc
+    Find-VMMSEvents.ps1 -start "3/11/2019 3:00 AM" -end "3/14/2019 5:00 PM" -cluster amer2-hvc -vmname app01
     This will return a report for each node name as a CSV with the VMMS events inside the specified date range. 
 
 #>
