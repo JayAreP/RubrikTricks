@@ -1,7 +1,11 @@
 function Render-RubrikReport {
     param (
         [parameter(mandatory)]
-        [string] $reportname
+        [string] $reportname,
+        [parameter()]
+        [switch] $ConvertToGB,
+        [parameter()]
+        [switch] $html
     )
     $rnd = get-random
     $filename = $rnd.ToString() + '.csv'
@@ -13,7 +17,6 @@ function Render-RubrikReport {
             [parameter(mandatory)]
             [string] $filename
         )
-
         $URIendpoint = 'report/' + $id + '/refresh'
         $request = Invoke-RubrikRESTCall -api internal -Endpoint $URIendpoint -Method POST 
         $URIendpointreq = 'report/request/' + $request.id 
@@ -30,12 +33,21 @@ function Render-RubrikReport {
         Invoke-WebRequest -Uri $csvrequest -OutFile $filename
         Get-Item $filename
     }
+
     $reportname | Write-Verbose 
     $rrpt = get-rubrikreport -name $reportname | Get-RubrikReport
     $rrpt | Write-Verbose
     $rtable = Get-RubrikReportCSV -id $rrpt.id -filename $filename
     
     $array = Import-Csv $filename
-    $array 
+    if ($ConvertToGB) {
+
+    }
+    if ($html) {
+
+    } else {
+        $array
+    }
+     
     Remove-Item $filename
 }
