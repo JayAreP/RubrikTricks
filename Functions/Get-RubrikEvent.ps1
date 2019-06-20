@@ -11,7 +11,7 @@ function Get-RubrikEvent {
         [string]$status,
         [parameter()]
         [string]$event_type,
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
+        [Parameter()]
         [string]$object_ids,
         [parameter()]
         [string]$object_name,
