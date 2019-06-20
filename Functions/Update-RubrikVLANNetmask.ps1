@@ -1,4 +1,13 @@
 function Update-RubrikVLANNetmask {
+    <#
+    .DESCRIPTION
+    Update the requested VLAN to use a new subnet mask. It has to remove and re-add the vlan due to no PATCH method for this API. 
+
+    .EXAMPLE
+    Update-RubrikVLANNetmask -vlan 5 -netmask 255.255.252.0
+    This will remove vlan 5, and re-add it using the same interface assignments, but with an updated netmask. 
+    #>
+    
     param (
         [Parameter(Mandatory)]
         [string] $vlan,
