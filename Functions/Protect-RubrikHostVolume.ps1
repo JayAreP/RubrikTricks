@@ -31,11 +31,13 @@ function Protect-RubrikHostVolumes {
     }
 
     $rhostvg = Get-RubrikVolumeGroup | Where-Object {$_.hostId -eq $id}
-    $rhostvols = Get-RubrikVolumeGroup -id $rhostvg.id
+    # $rhostvols = Get-RubrikVolumeGroup -id $rhostvg.id
+    $uri = 'host/' + $rhost.id + '/volume'
+    $hostvols = Invoke-RubrikRESTCall -api internal -Method GET -Endpoint $uri
 
     $o = New-Object -TypeName psobject  
     $o | Add-Member -MemberType NoteProperty -Name configuredSlaDomainId -Value $slaid.id
-    $o | Add-Member -MemberType NoteProperty -Name volumeIdsIncludedInSnapshots -Value @($rhostvols.volumes.id)
+    $o | Add-Member -MemberType NoteProperty -Name volumeIdsIncludedInSnapshots -Value @($hostvols.data.id)
 
     $endpoint = 'volume_group/' + $rhostvg.id
     Invoke-RubrikRESTCall -Endpoint $endpoint -Method PATCH -Body $o -api internal
