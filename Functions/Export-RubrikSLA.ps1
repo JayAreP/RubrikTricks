@@ -15,6 +15,6 @@ Function Export-RubrikSLA {
     
     $rsla = get-rubriksla -Name $sla -PrimaryClusterID local
     $endpointURI =  'sla_domain/' + $rsla.id 
-    $json = Invoke-RubrikRESTCall -Endpoint $endpointURI -Method get | ConvertTo-Json -Depth 10
+    $json = Invoke-RubrikRESTCall -Endpoint $endpointURI -Method get -api v2 | ConvertTo-Json -Depth 10
     $json | Out-File $filename
 }
