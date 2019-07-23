@@ -11,5 +11,5 @@ Function Import-RubrikSLA {
 
     if ($slaname) {$rsla.name = $slaname}
 
-    Invoke-RubrikRESTCall -Endpoint 'sla_domain' -Method POST -api v2 -Body $rsla
+    Invoke-RubrikRESTCall -Endpoint 'sla_domain' -Method POST -api 2 -Body $rsla
 }
