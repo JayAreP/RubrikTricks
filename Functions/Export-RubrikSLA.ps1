@@ -13,7 +13,7 @@ Function Export-RubrikSLA {
     if (!$filename) {
         $filename = $Global:RubrikConnection.server + '-' + $sla + '.json'
     }
-    Write-Verbose Exporting $filename
+    Write-Host -ForegroundColor Yellow Exporting $sla as $filename
     $rsla = get-rubriksla -Name $sla -PrimaryClusterID local
     $endpointURI =  'sla_domain/' + $rsla.id 
     $json = Invoke-RubrikRESTCall -Endpoint $endpointURI -Method get -api 2 | ConvertTo-Json -Depth 10
