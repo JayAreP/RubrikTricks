@@ -5,7 +5,7 @@ Function Import-RubrikSLA {
         [parameter(Mandatory)]
         [String] $filename,
         [parameter()]
-        [String] $LocalOnly
+        [Switch] $LocalOnly
     )
 
     $dsla = Get-Content $filename | ConvertFrom-Json
@@ -13,6 +13,7 @@ Function Import-RubrikSLA {
     if ($LocalOnly) {
         $rsla.PSObject.Properties.Remove('archivalSpecs')
         $rsla.PSObject.Properties.Remove('replicationSpecs')
+        $rsla.PSObject.Properties.Remove('localRetentionLimit')
     }
     if ($slaname) {$rsla.name = $slaname}
 
