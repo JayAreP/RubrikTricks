@@ -35,7 +35,7 @@ if ($localpath) {
 if (Get-RubrikManagedVolume -Name $managedVolumeName) {
     Write-Host -ForegroundColor green $managedVolumeName already exists, no need to re-create... `n
 } else {
-    New-RubrikManagedVolume -Name $managedVolumeName -Channels $channels -VolumeSize $size
+    New-RubrikManagedVolume -Name $managedVolumeName -Channels $channels -VolumeSize $size 
 }
 
 <#
@@ -57,7 +57,7 @@ $patharray = $RMVs.mainExport.channels
 $rmvid = $RMVs.id
 
 while (!$patharray) {
-    Write-Progress -Activity "Waiting on Managed Volume"
+    Write-Progress -Activity "Creating Managed Volume exports, please wait"
     sleep 1
     $RMVs = Get-RubrikManagedVolume -Name $managedVolumeName
     $patharray = $RMVs.mainExport.channels
@@ -68,7 +68,7 @@ $curlname = 'curl' + '-' + $managedVolumeName + '.txt'
 
 $fstab = @()
 
-Write-Host -ForegroundColor yellow `n'Copy and paste the following into the guest console to create the folders.'`n"---------------------------------------"
+Write-Host -ForegroundColor yellow `n'Copy and paste the following into the guest console to create the folders:'
 
 foreach ($i in $patharray) {
     $rpath = $i.ipAddress + ':' + $i.mountPoint
@@ -78,13 +78,13 @@ foreach ($i in $patharray) {
     $o | Add-Member -Type NoteProperty -Name 'RubrikPath' -Value $rpath
     $o | Add-Member -Type NoteProperty -Name 'LocalPath' -Value $lpath
     $o | Add-Member -Type NoteProperty -Name 'FSType' -Value 'nfs'
-    $o | Add-Member -Type NoteProperty -Name 'Options' -Value 'rw,bg,hard,nointr,rsize=32768,wsize=32768,tcp,vers=3,timeo=600 0 0'
+    $o | Add-Member -Type NoteProperty -Name 'Options' -Value 'rw,bg,hard,nointr,rsize=1048576,wsize=1048576,tcp,vers=3,timeo=600,actimeo=0,noatime 0 0'
     $fstab += $o
 }
 
+
 if ($sla) {
     if (Get-RubrikSLA -Name $sla) {
-        Write-Host `n `n Adding $managedVolumeName to SLA $sla
         $rsla = get-rubriksla -Name $sla
         $rid = $rsla.id
         $jsonstring = "{`"managedIds`": [`"$rmvid`"]}"
@@ -96,13 +96,14 @@ if ($sla) {
     }
 }
 
-Write-Host -ForegroundColor yellow `n"Copy and paste the following into /etc/fstab, or open $fstabname"`n"---------------------------------------"`n ($fstab | Format-Table -hidetableheaders)
 
-
+Write-Host -ForegroundColor yellow `n"Copy and paste the following into /etc/fstab, or open $fstabname"
+$fstab | Format-Table -hidetableheaders
 $fstab | Format-Table -hidetableheaders | Out-File $fstabname 
 
 $curlcmdURI = 'https://' + $Global:rubrikConnection.server + '/api/internal/managed_volume/' + $rmvid
 
-Write-Host -ForegroundColor yellow "Use the following CURL URI for this volume, or open $curlname" `n $curlcmdURI `n
-
+Write-Host -ForegroundColor yellow "Use the following CURL URI for this volume, or open $curlname" `n 
+$curlcmdURI 
+Write-Host `n`n
 $curlcmdURI | Out-File $curlname
