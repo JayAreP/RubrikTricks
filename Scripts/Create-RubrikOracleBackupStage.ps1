@@ -1,11 +1,11 @@
 param(
     [parameter(mandatory)]
-    [string]$managedvolume,
-    [parameter()]
-    [int]$channels,
+    [string]$managedVolumeName,
+    [parameter(mandatory)]
+    [string]$channels,
     [parameter()]
     [int64]$size,
-    [parameter(mandatory)]
+    [parameter()]
     [string]$localpath,
     [parameter()]
     [string]$sla
@@ -18,23 +18,27 @@ Creates the managed volume and generates the fstab entries for the linux host.
 
 .EXAMPLE
 
-./Create-RubrikOracleBackups.ps1 -managedvolume ORMV01 -channels 2 -size 20gb -localpath '/mnt/ormv01' -sla 'Oracle SLA'
+./Create-RubrikOracleBackups.ps1 -managedVolumeName ORMV01 -channels 2 -size 20gb -localpath '/mnt/ormv01' -sla 'Oracle SLA'
 
 Creates file named fstab-additions.txt that contains a copy/paste set of fstab entries for the Linux Oracle host
 
 #>
-
-if ($localpath[-1] -eq '/') {
-    Write-Host -ForegroundColor yellow Trailing `/ found in localpath paramter `($localpath`), removing... `n
-    $localpath = $localpath.Substring(0,$localpath.Length-1)
-}
-
-if (Get-RubrikManagedVolume -Name $managedvolume) {
-    Write-Host -ForegroundColor green $managedvolume already exists, no need to re-create... `n
+if ($localpath) {
+    if ($localpath[-1] -eq '/') {
+        Write-Host -ForegroundColor yellow Trailing `/ found in localpath paramter `($localpath`), removing... `n
+        $localpath = $localpath.Substring(0,$localpath.Length-1)
+    }
 } else {
-    New-RubrikManagedVolume -Name $managedvolume -Channels $channels -VolumeSize $size
+    $localpath = '/mnt/' + $managedVolumeName
 }
 
+if (Get-RubrikManagedVolume -Name $managedVolumeName) {
+    Write-Host -ForegroundColor green $managedVolumeName already exists, no need to re-create... `n
+} else {
+    New-RubrikManagedVolume -Name $managedVolumeName -Channels $channels -VolumeSize $size
+}
+
+<#
 function Get-RubrikFloatingIPAddress {
     Invoke-RubrikRESTCall -api internal -endpoint 'node_management/cluster_ip' -Method GET
 }
@@ -44,16 +48,27 @@ if ($rfips.count -lt $channels) {
     write-host -ForegroundColor Yellow Not enough floating IPs are available to service the number of Channels. 
     exit
 }
+#>
 
-$RMVs = Get-RubrikManagedVolume -Name $managedvolume
+# put a wait here
+
+$RMVs = Get-RubrikManagedVolume -Name $managedVolumeName
 $patharray = $RMVs.mainExport.channels
 $rmvid = $RMVs.id
 
-Remove-Item .\fstab-additions.txt -ErrorAction SilentlyContinue
+while (!$patharray) {
+    Write-Progress -Activity "Waiting on Managed Volume"
+    sleep 1
+    $RMVs = Get-RubrikManagedVolume -Name $managedVolumeName
+    $patharray = $RMVs.mainExport.channels
+}
+
+$fstabname = 'fstab' + '-' + $managedVolumeName + '.txt'
+$curlname = 'curl' + '-' + $managedVolumeName + '.txt'
 
 $fstab = @()
 
-Write-Host -ForegroundColor yellow `n 'Copy and paste the following into the guest console to create the folders.'`n "---------------------------------------"
+Write-Host -ForegroundColor yellow `n'Copy and paste the following into the guest console to create the folders.'`n"---------------------------------------"
 
 foreach ($i in $patharray) {
     $rpath = $i.ipAddress + ':' + $i.mountPoint
@@ -69,7 +84,7 @@ foreach ($i in $patharray) {
 
 if ($sla) {
     if (Get-RubrikSLA -Name $sla) {
-        Write-Host `n `n Adding $managedvolume to SLA $sla
+        Write-Host `n `n Adding $managedVolumeName to SLA $sla
         $rsla = get-rubriksla -Name $sla
         $rid = $rsla.id
         $jsonstring = "{`"managedIds`": [`"$rmvid`"]}"
@@ -81,8 +96,13 @@ if ($sla) {
     }
 }
 
-Write-Host -ForegroundColor yellow 'Copy and paste the following into /etc/fstab' `n 'or open .\fstab-aditions.txt'`n "---------------------------------------"
+Write-Host -ForegroundColor yellow `n"Copy and paste the following into /etc/fstab, or open $fstabname"`n"---------------------------------------"`n ($fstab | Format-Table -hidetableheaders)
 
-$fstab | Format-Table -hidetableheaders
-$fstab | Format-Table -hidetableheaders | Out-File .\fstab-additions.txt
 
+$fstab | Format-Table -hidetableheaders | Out-File $fstabname 
+
+$curlcmdURI = 'https://' + $Global:rubrikConnection.server + '/api/internal/managed_volume/' + $rmvid
+
+Write-Host -ForegroundColor yellow "Use the following CURL URI for this volume, or open $curlname" `n $curlcmdURI `n
+
+$curlcmdURI | Out-File $curlname
