@@ -44,7 +44,7 @@ function Add-RubrikVcenter {
         $currentvc = (Invoke-RubrikRESTCall -Endpoint 'vmware/vcenter' -Method GET).data | where-object {$_.hostname -eq $vcserver}
         $endpoint = 'vmware/vcenter/' + $currentvc.id
         Invoke-RubrikRESTCall -Endpoint $endpoint -Method PUT -Body $o
-        sleep 3
+        start-sleep -seconds 3
         $endpoint = 'vmware/vcenter/' + $currentvc.id + '/refresh'
         $jobrun = Invoke-RubrikRESTCall -Endpoint $endpoint -Method POST
         while ($jobrun.status -eq "RUNNING" -or $jobrun.status -eq "QUEUED") {
