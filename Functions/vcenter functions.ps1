@@ -37,7 +37,6 @@ function Add-RubrikVcenter {
         Invoke-RubrikRESTCall -Endpoint $endpoint -Method POST -Body $o
     }
 }
-}
 
 function createrbkrole {
     $Rubrik_Privileges = @(
