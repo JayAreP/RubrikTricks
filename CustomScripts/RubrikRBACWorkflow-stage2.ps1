@@ -1,6 +1,6 @@
 param (
     [parameter(mandatory)]
-    [string]$datacenter,
+    [string]$Datacenter,
     [parameter()]
     [string]$password = 'Rubrik123!@#',
     [parameter()]
@@ -42,7 +42,11 @@ if (!(Get-ADUser -Filter 'name -eq $namestring')) {
 } else {
     write-host -ForegroundColor yellow User $namestring already exists.
 }
-    
+
+# Export credential fo xml for later use
+$cred = New-Object System.Management.Automation.PSCredential($upn,$pw)
+$cred | Export-Clixml -Path $namestring
+
 # add account to adgroup
 Write-Host -ForegroundColor Green Adding AD User $namestring to group $ADGroupName
 Get-ADGroup $ADGroupName | Add-ADGroupMember -Members $namestring
