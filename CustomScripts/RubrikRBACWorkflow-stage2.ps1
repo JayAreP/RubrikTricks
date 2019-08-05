@@ -18,7 +18,7 @@ param (
     Use this script after, and in cunjunction with the one-time use script RubrikRBACWorkflow-stage1.ps1 to populate an appropriate Rubrik access role and AD group. 
      
     .EXAMPLE
-    ./RubrikRBACWorkflow-stage2.ps1 -vcDatacenter Labs -rubrikRoleName RubrikVcenter -ADDomainName Americas -ADGroupName RubrikAccessGroup-DLG 
+    ./RubrikRBACWorkflow-stage2.ps1 -Datacenter Labs -rubrikRoleName RubrikVcenter -ADDomainName Americas -ADGroupName RubrikAccessGroup-DLG 
 
     This will:
         - Create an AD User named rbksvc-Labs with a default password of 'Rubrik123!@#' (specify another password with the -password paramter) 
