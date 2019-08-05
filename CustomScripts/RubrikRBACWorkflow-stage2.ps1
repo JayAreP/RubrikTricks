@@ -1,16 +1,16 @@
 param (
     [parameter(mandatory)]
-    [string]$Datacenter,
+    [string] $Datacenter,
     [parameter()]
-    [string]$password = 'Rubrik123!@#',
+    [string] $password = 'Rubrik123!@#',
     [parameter()]
-    [string]$namePrefix = 'rbksvc-',
+    [string] $namePrefix = 'rbksvc-',
     [parameter(mandatory)]
-    [string]$rubrikRoleName,
+    [string] $vCenterRoleName,
     [parameter(mandatory)]
-    [string]$ADDomainName,
+    [string] $ADDomainName,
     [parameter(mandatory)]
-    [string]$ADGroupName
+    [string] $ADGroupName
 )
 <#
     .SYNOPSIS
@@ -55,7 +55,7 @@ Get-ADGroup $ADGroupName | Add-ADGroupMember -Members $namestring
 
 # assign user to rubrik role on datacenter
 $aduser = Get-ADUser $namestring -Properties *
-$role = Get-VIRole -Name $rubrikRoleName
+$role = Get-VIRole -Name $vCenterRoleName
 $principleName = $ADDomain.NetBIOSName + '\' + $aduser.Name
 Write-Host -ForegroundColor Green Adding $principleName to NoAccess for $vcdc.name
 New-VIPermission -Principal $principleName -Role $role -Entity $vcdc

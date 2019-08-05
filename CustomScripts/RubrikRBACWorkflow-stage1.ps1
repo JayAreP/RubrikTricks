@@ -4,7 +4,7 @@ param(
     [parameter(mandatory)]
     [string] $vCenterRoleName,
     [parameter(mandatory)]
-    [string]$ADDomainName
+    [string] $ADDomainName
 )
 
  <#
