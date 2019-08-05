@@ -2,10 +2,24 @@ param(
     [parameter(mandatory)]
     [string] $Datacenter,
     [parameter(mandatory)]
-    [string] $Credential,
+    [System.Management.Automation.PSCredential] $Credential,
     [parameter()]
     [string] $IncludeInName = 'rubrik'
 )
+<#
+    .SYNOPSIS
+    Powershell scripts to create and harden a service account for use with a specific vCenter datacenter object and tie that access to a specific vCenter role. 
+    Use this script after, and in cunjunction with the one-time use script RubrikRBACWorkflow-stage1.ps1 and the operational script RubrikRBACWorkflow-stage2.ps1 
+    to populate an appropriate Rubrik access role and AD group. 
+     
+    .EXAMPLE
+    ./RubrikRBACWorkflow-stage3.ps1 -Datacenter Labs -Credential $rubrikAdmin
+
+    This will:
+        - Acquire the Edge appliance IPv4 address and connect to that rubrik using the specified -Credential
+        - Update the Rubrik with the credfile that was created in Stage 2. 
+        - Refresh the Rubrik Edge appliance's vcenter. 
+#>
 
 $edgevm = Get-Datacenter $Datacenter | Get-VM | Where-Object {$_.name -match $IncludeInName}   
 $edgeip = $edgevm.Guest.IPAddress[0]

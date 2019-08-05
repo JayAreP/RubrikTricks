@@ -14,7 +14,7 @@ param (
 )
 <#
     .SYNOPSIS
-    Powershell scripts to create and harden a service account for use with a specific vCenter datacenter object and tie that access to a specificvCenter role. 
+    Powershell scripts to create and harden a service account for use with a specific vCenter datacenter object and tie that access to a specific vCenter role. 
     Use this script after, and in cunjunction with the one-time use script RubrikRBACWorkflow-stage1.ps1 to populate an appropriate Rubrik access role and AD group. 
      
     .EXAMPLE
