@@ -44,8 +44,9 @@ if (!(Get-ADUser -Filter 'name -eq $namestring')) {
 }
 
 # Export credential fo xml for later use 
+$credfile = $namestring + '-' + "credfile.xml"
 $cred = New-Object System.Management.Automation.PSCredential($upn,$pw)
-$cred | Export-Clixml -Path $namestring
+$cred | Export-Clixml -Path $credfile
 
 # add account to adgroup
 Write-Host -ForegroundColor Green Adding AD User $namestring to group $ADGroupName

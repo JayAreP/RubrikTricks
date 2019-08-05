@@ -31,11 +31,19 @@ function Add-RubrikVcenter {
         Invoke-RubrikRESTCall -Endpoint $endpoint -Method PUT -Body $o
         sleep 3
         $endpoint = 'vmware/vcenter/' + $currentvc.id + '/refresh'
-        Invoke-RubrikRESTCall -Endpoint $endpoint -Method POST
+        $jobrun = Invoke-RubrikRESTCall -Endpoint $endpoint -Method POST
+        while ($jobrun.status -eq "RUNNING" -or $jobrun.status -eq "QUEUED") {
+            Write-Progress -Activity "Refreshing vCenter..." -PercentComplete $jobrun.progress
+            start-sleep -seconds 1
+            $endpoint = 'vmware/vcenter/request/' + $jobrun.id
+            $jobrun = Invoke-RubrikRESTCall -Endpoint $endpoint -Method get
+        }
     } else {
         $endpoint = 'vmware/vcenter'
         Invoke-RubrikRESTCall -Endpoint $endpoint -Method POST -Body $o
     }
+
+
 }
 
 function createrbkrole {
