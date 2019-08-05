@@ -5,7 +5,7 @@ param(
     [string] $vCenterRoleName,
     [parameter(mandatory)]
     [string]$ADDomainName
-    )
+)
 
  <#
     .SYNOPSIS
@@ -82,7 +82,7 @@ function createrbkrole {
         'VirtualMachine.State.RevertToSnapshot'
     )
     $access = Get-VIPrivilege -id $Rubrik_Privileges
-    if (!(Get-VIRole -Name $roleName)) {
+    if (!(Get-VIRole -Name $roleName -ErrorAction SilentlyContinue)) {
         New-VIRole -Name $roleName -Privilege $access}
 }
 
@@ -90,13 +90,19 @@ function createrbkrole {
 createrbkrole -roleName $vCenterRoleName
 
 # Create AD Group
-New-ADGroup $ADGroupname -GroupScope DomainLocal
+try {
+    Get-ADGroup $ADGroupname
+} catch {
+    Write-Host -ForegroundColor Green Creating AD Group $ADGroupName
+    New-ADGroup $ADGroupname -GroupScope DomainLocal
+}
 
 # Add allow RBAC to root
 $role = Get-VIRole -Name $vCenterRoleName
 $ADDomain = Get-ADDomain $ADDomainName
 $ADGroupPrincipleName = $ADDomain.NetBIOSName + '\' + $ADGroupName
-New-VIPermission -Principal $ADGroupPrincipleName -Role $role
+$vcroot = get-folder -norecursion
+New-VIPermission -Principal $ADGroupPrincipleName -Role $role -Entity $vcroot
 
 # Add deny RBAC to each vcenter datacenter
 $vcdcs = get-datacenter

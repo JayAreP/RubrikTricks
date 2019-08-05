@@ -11,7 +11,7 @@ param (
     [string]$ADDomainName,
     [parameter(mandatory)]
     [string]$ADGroupName
-    )
+)
 <#
     .SYNOPSIS
     Powershell scripts to create and harden a service account for use with a specific vCenter datacenter object and tie that access to a specificvCenter role. 
