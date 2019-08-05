@@ -43,7 +43,7 @@ if (!(Get-ADUser -Filter 'name -eq $namestring')) {
     write-host -ForegroundColor yellow User $namestring already exists.
 }
 
-# Export credential fo xml for later use
+# Export credential fo xml for later use 
 $cred = New-Object System.Management.Automation.PSCredential($upn,$pw)
 $cred | Export-Clixml -Path $namestring
 
