@@ -1,6 +1,6 @@
 param (
     [parameter(mandatory)]
-    [string]$vcDatacenter,
+    [string]$datacenter,
     [parameter()]
     [string]$password = 'Rubrik123!@#',
     [parameter()]
