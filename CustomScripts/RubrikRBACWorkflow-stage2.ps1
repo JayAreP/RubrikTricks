@@ -2,15 +2,15 @@ param (
     [parameter(mandatory)]
     [string] $Datacenter,
     [parameter()]
-    [string] $password = 'Rubrik123!@#',
-    [parameter()]
     [string] $namePrefix = 'rbksvc-',
     [parameter(mandatory)]
     [string] $vCenterRoleName,
     [parameter(mandatory)]
     [string] $ADDomainName,
     [parameter(mandatory)]
-    [string] $ADGroupName
+    [string] $ADGroupName,
+    [parameter()]
+    [string] $password = 'Rubrik123!@#'
 )
 <#
     .SYNOPSIS
