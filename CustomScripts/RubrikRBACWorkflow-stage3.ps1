@@ -66,5 +66,5 @@ function Add-RubrikVcenter {
 # $updatecreds = Import-Clixml $credfile.Name
 $aduser = get-aduser $serviceUser
 $pw = $servicepass | ConvertTo-SecureString -Force -AsPlainText
-$updatecreds = New-Object System.Management.Automation.PSCredential($aduser.UserPrincipleName,$pw)
+$updatecreds = New-Object System.Management.Automation.PSCredential($aduser.UserPrincipalName,$pw)
 Add-RubrikVcenter -credential $updatecreds -updateOnly
