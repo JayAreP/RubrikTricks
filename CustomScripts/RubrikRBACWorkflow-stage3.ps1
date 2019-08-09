@@ -3,12 +3,12 @@ param(
     [string] $Datacenter,
     [parameter(mandatory)]
     [System.Management.Automation.PSCredential] $Credential,
-    [parameter()]
-    [string] $IncludeInName = 'rubrik',
     [parameter(mandatory)]
     [string] $serviceUser,
     [parameter(mandatory)]
-    [string] $servicePass
+    [string] $servicePass,
+    [parameter()]
+    [string] $IncludeInName = 'rubrik'
 )
 <#
     .SYNOPSIS
@@ -17,11 +17,11 @@ param(
     to populate an appropriate Rubrik access role and AD group. 
      
     .EXAMPLE
-    ./RubrikRBACWorkflow-stage3.ps1 -Datacenter Labs -Credential $rubrikAdmin
+    ./RubrikRBACWorkflow-stage3.ps1 -Datacenter Labs -Credential $rubrikAdmin -serviceUser rbksvc-USEast -servicePass 'Rubrik123!@#'
 
     This will:
         - Acquire the Edge appliance IPv4 address and connect to that rubrik using the specified -Credential
-        - Update the Rubrik with the credfile that was created in Stage 2. 
+        - Update the Rubrik with serviceUser and servicePass specified.
         - Refresh the Rubrik Edge appliance's vcenter. 
 #>
 
