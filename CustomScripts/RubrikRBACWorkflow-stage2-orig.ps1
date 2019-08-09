@@ -1,12 +1,16 @@
 param (
     [parameter(mandatory)]
     [string] $Datacenter,
-    [parameter(mandatory)]
-    [string] $namePrefix,
+    [parameter()]
+    [string] $namePrefix = 'rbksvc-',
     [parameter(mandatory)]
     [string] $vCenterRoleName,
     [parameter(mandatory)]
-    [string] $ADGroupName
+    [string] $ADDomainName,
+    [parameter(mandatory)]
+    [string] $ADGroupName,
+    [parameter()]
+    [string] $password = 'Rubrik123!@#'
 )
 <#
     .SYNOPSIS
@@ -14,9 +18,11 @@ param (
     Use this script after, and in cunjunction with the one-time use script RubrikRBACWorkflow-stage1.ps1 to populate an appropriate Rubrik access role and AD group. 
      
     .EXAMPLE
-    ./RubrikRBACWorkflow-stage2.ps1 -Datacenter Labs -vCenterRoleName RubrikVcenter -ADGroupName RubrikAccessGroup-DLG -namePrefix rbksvc
+    ./RubrikRBACWorkflow-stage2.ps1 -Datacenter Labs -vCenterRoleName RubrikVcenter -ADDomainName Americas -ADGroupName RubrikAccessGroup-DLG 
 
     This will:
+        - Create an AD User named rbksvc-Labs with a default password of 'Rubrik123!@#' (specify another password with the -password paramter) 
+        - Add the user to an AD group named RubrikAccessGroup-DLG
         - Assign this user the role of RubrikVcenter to the Labs datacenter. 
         - Check to see if the RubrikAccessGroup-DLG has NoAccess already assigned to the datacenter Labs, and if not, assign NoAccess to the datacenter Labs.
 #>
@@ -24,16 +30,37 @@ param (
 # create datacenter object 
 $vcdc = Get-Datacenter -Name $datacenter
 
+# create service account
+$ADDomain = Get-ADDomain $ADDomainName
+$namestring = $namePrefix + $vcdc.name
+if (!(Get-ADUser -Filter 'name -eq $namestring')) {
+    $suffix = $ADDomain.forest
+    $upn = $namestring + '@' + $suffix
+    $pw = $password | ConvertTo-SecureString -Force -AsPlainText
+    Write-Host -ForegroundColor Green Creating AD User $namestring
+    New-ADUser -AccountPassword $pw -Name $namestring -Enabled $true -UserPrincipalName $upn
+} else {
+    write-host -ForegroundColor yellow User $namestring already exists.
+}
+
+# Export credential fo xml for later use 
+$credfile = $namestring + '-' + "credfile.xml"
+$cred = New-Object System.Management.Automation.PSCredential($upn,$pw)
+$cred | Export-Clixml -Path $credfile
+
+# add account to adgroup
+Write-Host -ForegroundColor Green Adding AD User $namestring to group $ADGroupName
+Get-ADGroup $ADGroupName | Add-ADGroupMember -Members $namestring
+
+
 # assign user to rubrik role on datacenter
-$filter = ($namePrefix + '*')
-$aduser = Get-ADUser -filter {name -like $filter} -properties * | Where-Object {$_.name -match $Datacenter} 
+$aduser = Get-ADUser $namestring -Properties *
 $role = Get-VIRole -Name $vCenterRoleName
 $principleName = $ADDomain.NetBIOSName + '\' + $aduser.Name
 Write-Host -ForegroundColor Green Adding $principleName to NoAccess for $vcdc.name
 New-VIPermission -Principal $principleName -Role $role -Entity $vcdc
 
 # Check to see if group role deny permissions already exist, add if needed. 
-$ADDomain = Get-ADDomain $aduser.CanonicalName.split('/')[0]
 $ADGroupPrincipleName = $ADDomain.NetBIOSName + '\' + $ADGroupName
 
 if (!(Get-VIPermission -Entity $vcdc -Principal $ADGroupPrincipleName)) {

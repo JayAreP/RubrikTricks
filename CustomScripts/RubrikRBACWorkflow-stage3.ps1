@@ -4,7 +4,11 @@ param(
     [parameter(mandatory)]
     [System.Management.Automation.PSCredential] $Credential,
     [parameter()]
-    [string] $IncludeInName = 'rubrik'
+    [string] $IncludeInName = 'rubrik',
+    [parameter(mandatory)]
+    [string] $serviceUser,
+    [parameter(mandatory)]
+    [string] $servicePass
 )
 <#
     .SYNOPSIS
@@ -59,7 +63,8 @@ function Add-RubrikVcenter {
     }
 }
 
-$filenamestring = $Datacenter + '-credfile.xml'
-$credfile = Get-ChildItem | Where-Object {$_.name -match $filenamestring}
-$updatecreds = Import-Clixml $credfile.Name
+# $updatecreds = Import-Clixml $credfile.Name
+$aduser = get-aduser $serviceUser
+$pw = $servicepass | ConvertTo-SecureString -Force -AsPlainText
+$updatecreds = New-Object System.Management.Automation.PSCredential($aduser.UserPrincipleName,$pw)
 Add-RubrikVcenter -credential $updatecreds -updateOnly
