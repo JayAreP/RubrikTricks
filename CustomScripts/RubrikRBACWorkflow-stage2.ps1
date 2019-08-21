@@ -26,7 +26,7 @@ param (
 # create datacenter object 
 $vcdc = Get-Datacenter -Name $datacenter
 
-# assign user to rubrik role on datacenter
+# assign user to rubrik role on datacenter 
 $filter = ($namePrefix + '*')
 $aduser = Get-ADUser -filter {name -like $filter} -properties * | Where-Object {$_.name -match $Datacenter} 
 $role = Get-VIRole -Name $vCenterRoleName
