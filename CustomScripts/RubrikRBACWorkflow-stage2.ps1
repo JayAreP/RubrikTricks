@@ -37,9 +37,11 @@ if ($aduser) {
         New-VIPermission -Principal $principleName -Role $role -Entity $vcdc
     } catch {
         Write-Host AD user $principleName may not exist, please check. 
+        exit
     }
 } else {
     Write-Host AD user for $Datacenter may not exist, please check. 
+    exit
 }
 
 # Check to see if group role deny permissions already exist, add if needed. 
