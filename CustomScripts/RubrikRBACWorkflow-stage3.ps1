@@ -5,7 +5,7 @@ param(
     [System.Management.Automation.PSCredential] $Credential,
     [parameter(mandatory)]
     [string] $serviceUser,
-    [parameter(mandatory)]
+    [parameter()]
     [string] $servicePass,
     [parameter()]
     [string] $IncludeInName = 'rubrik'
@@ -24,11 +24,6 @@ param(
         - Update the Rubrik with serviceUser and servicePass specified.
         - Refresh the Rubrik Edge appliance's vcenter. 
 #>
-
-$edgevm = Get-Datacenter $Datacenter | Get-VM | Where-Object {$_.name -match $IncludeInName}   
-$edgeip = $edgevm.Guest.IPAddress[0]
-
-Connect-Rubrik -Server $edgeip -Credential $Credential
 
 function Add-RubrikVcenter {
     param(
@@ -63,8 +58,65 @@ function Add-RubrikVcenter {
     }
 }
 
-# $updatecreds = Import-Clixml $credfile.Name
-$aduser = get-aduser $serviceUser
-$pw = $servicepass | ConvertTo-SecureString -Force -AsPlainText
-$updatecreds = New-Object System.Management.Automation.PSCredential($aduser.UserPrincipalName,$pw)
-Add-RubrikVcenter -credential $updatecreds -updateOnly
+function Connect-ArkServer {
+    param(
+        [parameter(mandatory)]
+        [string] $arkuser,
+        [parameter(mandatory)]
+        [string] $arkpass,
+        [parameter(mandatory)]
+        [string] $arkserver,
+        [parameter()]
+        [string] $connectionNumber
+    )
+    if (!$connectionNumber) {
+        $connectionNumber = get-random Get-Random -Minimum 1 -Maximum 99
+    }
+    $o = New-Object psobject 
+    $o | Add-Member -MemberType NoteProperty -Name username -Value $arkuser
+    $o | Add-Member -MemberType NoteProperty -Name password -Value $arkpass
+    $o | Add-Member -MemberType NoteProperty -Name connectionNumber -Value $connectionNumber
+
+    $jsonbody = $o | ConvertTo-Json -Depth 10
+    $endpointURI = 'https://' + $arkserver + '/PasswordVault/WebServices/auth/Cyberark/CyberArkAuthenticationService.svc/Logon'
+    $results = Invoke-RestMethod -Method POST -Uri $endpointURI -Body $jsonbody
+    return $results
+}
+
+function Get-ArkUserPasswordSimple {
+    param(
+        [parameter(mandatory)]
+        [string] $Username,
+        [parameter(mandatory)]
+        [string] $token,
+        [parameter(mandatory)]
+        [string] $arkserver
+    )
+
+    $endpointURI = 'https://' + $arkserver + '/PasswordVault/WebServices/PIMServices.svc/Accounts?Keywords=' + $Username
+    $results = Invoke-RestMethod -Header $token -Uri $endpointURI -Method Get
+    $AccountID = $results.something
+
+    $endpointURI = 'https://' + $arkserver + '/PasswordVault/WebServices/PIMServices.svc/Accounts/' + $AccountID + '/Credentials'
+    $results = Invoke-RestMethod -Header $token -Uri $endpointURI -Method Get
+    return $results
+}
+
+if (!$servicePass) {
+    $arksession = Connect-ArkServer -arkuser username -arkpass password -arkserver arkserver 
+    $servicePass = Get-ArkUserPasswordSimple -Username $serviceUser -token $arksession -arkserver arkserver 
+}
+
+$edgevm = Get-Datacenter $Datacenter | Get-VM | Where-Object {$_.name -match $IncludeInName}   
+$edgeip = $edgevm.Guest.IPAddress
+
+foreach ($ip in $edgeip) {
+
+Connect-Rubrik -Server $ip -Credential $Credential
+
+    # $updatecreds = Import-Clixml $credfile.Name
+    $aduser = get-aduser $serviceUser
+    $pw = $servicepass | ConvertTo-SecureString -Force -AsPlainText
+    $updatecreds = New-Object System.Management.Automation.PSCredential($aduser.UserPrincipalName,$pw)
+    Add-RubrikVcenter -credential $updatecreds -updateOnly
+}

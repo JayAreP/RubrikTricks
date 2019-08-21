@@ -42,8 +42,6 @@ function Add-RubrikVcenter {
         $endpoint = 'vmware/vcenter'
         Invoke-RubrikRESTCall -Endpoint $endpoint -Method POST -Body $o
     }
-
-
 }
 
 function createrbkrole {

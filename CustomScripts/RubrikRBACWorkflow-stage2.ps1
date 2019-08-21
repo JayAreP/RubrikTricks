@@ -6,7 +6,9 @@ param (
     [parameter(mandatory)]
     [string] $vCenterRoleName,
     [parameter(mandatory)]
-    [string] $ADGroupName
+    [string] $ADGroupName,
+    [parameter(mandatory)]
+    [string] $ADDomainName
 )
 <#
     .SYNOPSIS
@@ -28,9 +30,17 @@ $vcdc = Get-Datacenter -Name $datacenter
 $filter = ($namePrefix + '*')
 $aduser = Get-ADUser -filter {name -like $filter} -properties * | Where-Object {$_.name -match $Datacenter} 
 $role = Get-VIRole -Name $vCenterRoleName
-$principleName = $ADDomain.NetBIOSName + '\' + $aduser.Name
-Write-Host -ForegroundColor Green Adding $principleName to NoAccess for $vcdc.name
-New-VIPermission -Principal $principleName -Role $role -Entity $vcdc
+$principleName = $ADDomainName + '\' + $aduser.Name
+Write-Host -ForegroundColor Green Adding $principleName to $vCenterRoleName for $vcdc.name
+if ($aduser) {
+    try {
+        New-VIPermission -Principal $principleName -Role $role -Entity $vcdc
+    } catch {
+        Write-Host AD user $principleName may not exist, please check. 
+    }
+} else {
+    Write-Host AD user for $Datacenter may not exist, please check. 
+}
 
 # Check to see if group role deny permissions already exist, add if needed. 
 $ADDomain = Get-ADDomain $aduser.CanonicalName.split('/')[0]
