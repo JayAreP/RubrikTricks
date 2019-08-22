@@ -58,31 +58,6 @@ function Add-RubrikVcenter {
     }
 }
 
-function Connect-ArkServer {
-    param(
-        [parameter(mandatory)]
-        [string] $arkuser,
-        [parameter(mandatory)]
-        [string] $arkpass,
-        [parameter(mandatory)]
-        [string] $arkserver,
-        [parameter()]
-        [string] $connectionNumber
-    )
-    if (!$connectionNumber) {
-        $connectionNumber = get-random Get-Random -Minimum 1 -Maximum 99
-    }
-    $o = New-Object psobject 
-    $o | Add-Member -MemberType NoteProperty -Name username -Value $arkuser
-    $o | Add-Member -MemberType NoteProperty -Name password -Value $arkpass
-    $o | Add-Member -MemberType NoteProperty -Name connectionNumber -Value $connectionNumber
-
-    $jsonbody = $o | ConvertTo-Json -Depth 10
-    $endpointURI = 'https://' + $arkserver + '/PasswordVault/WebServices/auth/Cyberark/CyberArkAuthenticationService.svc/Logon'
-    $results = Invoke-RestMethod -Method POST -Uri $endpointURI -Body $jsonbody
-    return $results
-}
-
 if (!$servicePass) {
 <#
 $servicePass = << Put aim client command to grab password here >>

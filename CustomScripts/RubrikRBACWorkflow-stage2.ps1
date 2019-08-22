@@ -29,7 +29,7 @@ $vcdc = Get-Datacenter -Name $datacenter
 # assign user to rubrik role on datacenter 
 $filter = ($namePrefix + '*')
 $aduser = Get-ADUser -filter {name -like $filter} -properties * | Where-Object {$_.name -match $Datacenter} 
-$role = Get-VIRole -Name $vCenterRoleName
+$role = Get-VIRole -Name $vCenterRoleName | where-object {$vcdc.uid -match $_.server}
 $principleName = $ADDomainName + '\' + $aduser.Name
 Write-Host -ForegroundColor Green Adding $principleName to $vCenterRoleName for $vcdc.name
 if ($aduser) {
