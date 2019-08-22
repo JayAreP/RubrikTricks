@@ -16,7 +16,7 @@ param (
     Use this script after, and in cunjunction with the one-time use script RubrikRBACWorkflow-stage1.ps1 to populate an appropriate Rubrik access role and AD group. 
      
     .EXAMPLE
-    ./RubrikRBACWorkflow-stage2.ps1 -Datacenter USEast -vCenterRoleName RubrikVcenter -ADGroupName RubrikAccessGroup-DLG -namePrefix rbksvc
+    ./RubrikRBACWorkflow-stage2.ps1 -Datacenter USEast -vCenterRoleName RubrikVcenter -ADGroupName RubrikAccessGroup-DLG -namePrefix rbksvc -ADDomainName SANDBOX
 
     This will:
         - Assign this user the role of RubrikVcenter to the USEast datacenter. 

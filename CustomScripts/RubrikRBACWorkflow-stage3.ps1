@@ -83,28 +83,10 @@ function Connect-ArkServer {
     return $results
 }
 
-function Get-ArkUserPasswordSimple {
-    param(
-        [parameter(mandatory)]
-        [string] $Username,
-        [parameter(mandatory)]
-        [string] $token,
-        [parameter(mandatory)]
-        [string] $arkserver
-    )
-
-    $endpointURI = 'https://' + $arkserver + '/PasswordVault/WebServices/PIMServices.svc/Accounts?Keywords=' + $Username
-    $results = Invoke-RestMethod -Header $token -Uri $endpointURI -Method Get
-    $AccountID = $results.something
-
-    $endpointURI = 'https://' + $arkserver + '/PasswordVault/WebServices/PIMServices.svc/Accounts/' + $AccountID + '/Credentials'
-    $results = Invoke-RestMethod -Header $token -Uri $endpointURI -Method Get
-    return $results
-}
-
 if (!$servicePass) {
-    $arksession = Connect-ArkServer -arkuser username -arkpass password -arkserver arkserver 
-    $servicePass = Get-ArkUserPasswordSimple -Username $serviceUser -token $arksession -arkserver arkserver 
+<#
+$servicePass = << Put aim client command to grab password here >>
+#>
 }
 
 $edgevm = Get-Datacenter $Datacenter | Get-VM | Where-Object {$_.name -match $IncludeInName}   
