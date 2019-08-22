@@ -54,7 +54,11 @@ function Add-RubrikVcenter {
         }
     } else {
         $endpoint = 'vmware/vcenter'
+        try {
         Invoke-RubrikRESTCall -Endpoint $endpoint -Method POST -Body $o
+        } catch {
+            Write-Host -ForegroundColor red 
+        }
     }
 }
 
@@ -66,14 +70,17 @@ $servicePass = << Put aim client command to grab password here >>
 
 $edgevm = Get-Datacenter $Datacenter | Get-VM | Where-Object {$_.name -match $IncludeInName}   
 $edgeip = $edgevm.Guest.IPAddress
+$iplists = $edgeip | ForEach-Object {[ipaddress]$_}
+$edgeip = ($iplists | Where-Object {$_.AddressFamily -eq 'InterNetwork'}).IPAddressToString
 
 foreach ($ip in $edgeip) {
 
 Connect-Rubrik -Server $ip -Credential $Credential
 
     # $updatecreds = Import-Clixml $credfile.Name
-    $aduser = get-aduser $serviceUser
     $pw = $servicepass | ConvertTo-SecureString -Force -AsPlainText
-    $updatecreds = New-Object System.Management.Automation.PSCredential($aduser.UserPrincipalName,$pw)
+    $updatecreds = New-Object System.Management.Automation.PSCredential($serviceUser,$pw)
     Add-RubrikVcenter -credential $updatecreds -updateOnly
+    $vmcount = (Get-RubrikVM).count
+    return $vmcount
 }
