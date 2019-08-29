@@ -22,8 +22,6 @@ param(
      - Reqest an update for key2 for the storage account rubrikstorageaccount.
      - Display the updated key2 for the storage account rubrikstorageaccount.
      - Update the Rubrik Archive Azure:Rubrik with the updated key.
-     
-
 #>
 
 # functions
@@ -56,7 +54,6 @@ $storageAccount = Get-AzureRmStorageAccount -Name $storageAccountName -ResourceG
 $currentStorageAccountKey = $storageAccount | Get-AzureRmStorageAccountKey | where-object {$_.KeyName -eq $keyName}
 Write-Host Current Storage account key for $keyName
 $currentStorageAccountKey
-
 
 # create new key (must be key1 or key2)
 $storageAccount | New-AzureRmStorageAccountKey -keyName $keyName 
