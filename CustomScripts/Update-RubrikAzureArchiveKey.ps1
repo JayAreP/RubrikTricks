@@ -28,6 +28,7 @@ param(
 
 function Get-RubrikAzureArchiveId {
     param (
+        [paramter(manditory)]
         [string] $archiveName
     )
     $archives = (Invoke-RubrikRESTCall -api internal -Endpoint 'archive/object_store' -Method GET).data
@@ -37,7 +38,9 @@ function Get-RubrikAzureArchiveId {
 
 function Set-RubrikAzureArchiveKey {
     param (
+        [paramter(manditory)]
         [string] $id,
+        [paramter(manditory)]
         [string] $key
     )
     $o = New-Object psobject
