@@ -1,6 +1,6 @@
 param(
     [parameter(Mandatory)]
-    [string] $EC2List,
+    [array] $EC2List,
     [parameter(Mandatory)]
     [string] $adgroup,
     [parameter(Mandatory)]
