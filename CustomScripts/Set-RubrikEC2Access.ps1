@@ -83,7 +83,6 @@ Function Protect-RubrikEC2Instance {
 }
 
 # Check for adgroup in rubrik
-# Create group if needed
 
 try {
     $userinfo = Get-RubrikUser -Username $adgroup
@@ -104,7 +103,7 @@ foreach ($i in $EC2List) {
 }
 
 # Assign SLAs to EC2 instances
-## Check that the SAL is valid
+## Check that the SLA is valid
 Try {
     $slainfo = Get-RubrikSLA -Name $sla
 } catch {
@@ -121,7 +120,4 @@ foreach ($i in $EC2List) {
     }
 }
 
-
 # Report on any errors. 
-
-
