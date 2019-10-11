@@ -9,29 +9,29 @@ param(
 
 # Functions
 
-function Get-RubrikUser {
+function Get-RubrikPrincipal {
     param(
-        [Parameter()]
-        [string] $Username,
-        [Parameter()]
-        [string] $Domain,
-        [Parameter(ValueFromPipelineByPropertyName = $true)]
-        [String]$id
+        [Parameter(Mandatory)]
+        [string] $name,
+        [Parameter(Mandatory)]
+        [ValidateSet('user','group',IgnoreCase = $false)]
+        [String] $type
     )
-    if ($Username) {
-        $endpoint = 'user?username=' + $Username
-    } elseif ($id) {
-        $endpoint = 'user/' + $id
-    } else {
-        $endpoint = 'user'
-    }
-    if ($domain) {
-        $ldaplist = Invoke-RubrikRESTCall -Endpoint 'ldap_service' -Method GET 
-        $ldapdomain = $ldaplist.data | where-object {$_.name -eq $Domain}
-        $endpoint = $endpoint + '&auth_domain_id=' + $ldapdomain.id
-    }
-    Write-Verbose $endpoint
-    Invoke-RubrikRESTCall -Endpoint $endpoint -api internal -Method Get
+
+    $o = New-Object psobject
+    $o | Add-Member -MemberType NoteProperty -Name "principalType" -Value $type
+    $o | Add-Member -MemberType NoteProperty -Name "searchAttr" -Value @('name')
+    $o | Add-Member -MemberType NoteProperty -Name "searchValue" -Value @($name)
+
+    $q = New-Object psobject
+    $q | Add-Member -MemberType NoteProperty -Name "queries" -Value @($o)
+
+    $endpointURI = 'principal_search'
+    $results = (Invoke-RubrikRESTCall -Endpoint $endpointURI -api internal -Method POST -Body $q).data
+    $result = $results | Where-Object {$_.name -eq $name}
+    if ($result) {
+        return $result
+    } 
 }
 
 Function Get-RubrikEC2Instance {
@@ -87,13 +87,13 @@ Function Protect-RubrikEC2Instance {
     $endpointURI = 'aws/ec2_instance/' + $id
     $o = New-Object -TypeName psobject
     $o | Add-Member -MemberType NoteProperty -TypeName "configuredSlaDomainId" -Value $slaid
-    return Invoke-RubrikRESTCall -Endpoint $endpointURI -Method POST -Body $o 
+    return Invoke-RubrikRESTCall -Endpoint $endpointURI -Method PATCH -Body $o -api internal
 }
 
 # Check for adgroup in rubrik
 
 try {
-    $userinfo = Get-RubrikUser -Username $adgroup
+    $userinfo = Get-RubrikPrincipal -name $adgroup -type group
 } catch {
     # expand on this later
     return $error[0]
@@ -116,7 +116,7 @@ Try {
     $slainfo = Get-RubrikSLA -Name $sla
 } catch {
     # expand on this later
-    return[0]
+    return $error[0]
 }
 
 foreach ($i in $EC2List) {
