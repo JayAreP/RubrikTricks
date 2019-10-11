@@ -62,8 +62,6 @@ $config = New-Object psobject
 $config | Add-Member -MemberType NoteProperty -Name 'classificationColor' -Value '#9DD5FB'
 $config | Add-Member -MemberType NoteProperty -Name 'classificationMessage' -Value $message
 
-$config | ConvertTo-Json
-
 # Set the banner
 
 Invoke-RubrikRESTCall -api 'internal' -endpoint 'cluster/me/security_classification' -Method PUT -Body $config
