@@ -1,7 +1,7 @@
 Function Set-RubrikUserAuthorization {
     param(
         [parameter(Mandatory)]
-        [string] $principleid,
+        [string] $principalid,
         [parameter(Mandatory)]
         [array] $objectid,
         [parameter(Mandatory)]
