@@ -31,8 +31,6 @@ $total_storage_TB = ($total_storage / 1000000000000)
 $available_storage_TB = ($available_storage / 1000000000000)
 $available_percentage = ($available_storage / $total_storage) * 100
 
-[math]::Round($a,2)
-
 $logical_dedupe = [math]::round($logical_dedupe, 1)
 $logical_ratio = [math]::round($logical_ratio, 1)
 $logical_TB = [math]::round($logical_TB, 1)
@@ -48,7 +46,6 @@ $node_status = Invoke-RubrikRESTCall -api 'internal' -Endpoint 'node' -Method GE
 foreach ($i in $node_status.data) {
     if ($i.supportTunnel.isTunnelEnabled) {
         $nodetunnelport = $i.supportTunnel.port
-        exit
     } else {
         $nodetunnelport = '----'
     }
@@ -64,6 +61,8 @@ $message = "CDM: $cdm_version | Total Storage: $total_storage_TB`TB | Available 
 $config = New-Object psobject
 $config | Add-Member -MemberType NoteProperty -Name 'classificationColor' -Value '#9DD5FB'
 $config | Add-Member -MemberType NoteProperty -Name 'classificationMessage' -Value $message
+
+$config | ConvertTo-Json
 
 # Set the banner
 
