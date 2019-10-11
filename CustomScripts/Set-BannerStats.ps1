@@ -1,5 +1,5 @@
 $node_ip = 'sand1-rbk01.rubrikdemo.com'
-$api_token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI5NDdlNGZhNC02MjA1LTQzOTYtOTc3Mi01OWRhZDFmOTU0YzhfZDYzZDZjNDEtZjdlMS00OTIzLTlkZGItMDZiNWU3NWFjZGJiIiwiaXNzIjoiOTQ3ZTRmYTQtNjIwNS00Mzk2LTk3NzItNTlkYWQxZjk1NGM4IiwianRpIjoiM2Y4ZmYzNTAtMDcwNi00MmNhLWFhYzAtMGU3NWRmY2NlMjhmIn0.szHwjShdsu1YAcJcge3ICJxn0o75nAKAVG3DxNNodVQ'
+$api_token = 'eyJ0eXAiO...'
 
 Connect-Rubrik -Server $node_ip -Token $api_token
 
