@@ -56,7 +56,7 @@ $streams_count = $get_streams_count.count
 
 # Build the message
 
-$message = "CDM: $cdm_version | Total Storage: $total_storage_TB`TB | Available Storage: $available_storage_TB`TB ($available_percentage`%) | Logical data reduction: $logical_dedupe ($logical_dedupe`:1) | Local snapshots: $snapshot_TB`TB | Running backups: $streams_count | Tunnel: $nodetunnelport" 
+$message = "CDM: $cdm_version | Total Storage: $total_storage_TB`TB | Available Storage: $available_storage_TB`TB ($available_percentage`%) | Logical data reduction: $logical_dedupe ($logical_ratio`:1) | Local snapshots: $snapshot_TB`TB | Running backups: $streams_count | Tunnel: $nodetunnelport" 
 
 $config = New-Object psobject
 $config | Add-Member -MemberType NoteProperty -Name 'classificationColor' -Value '#9DD5FB'
