@@ -2,7 +2,7 @@ param(
     [Parameter(Mandatory)]
     [string] $prefix,
     [Parameter(Mandatory)]
-    [string] $rubrik,
+    [datetime] $startdate,
     [Parameter()]
     [int] $NumMonths = 12
 )
@@ -37,11 +37,6 @@ function Build-MenuFromArray {
     Write-Host `n`n
 }
 
-if (!(Get-RubrikSLA -ea SilentlyContinue)) {
-    $creds = Get-Credential -Message "Enter Rubrik username and password."
-    Connect-Rubrik -Server $rubrik -Credential $creds
-}
-
 function Set-RubrikSLAArchiveLocation {
     param(
         [Parameter(Mandatory)]
@@ -74,7 +69,7 @@ function Set-RubrikSLAArchiveLocation {
     }
 
     $endpointURI = 'sla_domain/' + $RSLA.id
-    Invoke-RubrikRESTCall -Endpoint $endpointURI -Method PATCH -Body $a -verbose
+    Invoke-RubrikRESTCall -Endpoint $endpointURI -Method PATCH -Body $a -verbose -api 2
 }
 
 #Archive Select Menu
@@ -87,7 +82,7 @@ $archivelocal = Build-MenuFromArray -array $archives -property name -message "Se
 $start = 1
 $NumMonths = $NumMonths + 1
 while ($start -lt $NumMonths){
-    $date = get-date "Dec 2018"
+    $date = get-date $startdate
     $date = $date.AddMonths($start)
     $SLAName = $prefix + '-' + 'Exp' + '-' + (Get-Culture).DateTimeFormat.GetAbbreviatedMonthName($date.month) + '-' + $date.Year
     Write-Host -ForegroundColor Green ---- Creating SLA $SLAName ---- `n
