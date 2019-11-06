@@ -24,7 +24,7 @@ param(
         .EXAMPLE
         Enroll-NassEnMasse.ps1 -inputfile folderlist.txt -NAShost isln01 -SLA "Production Azure Archive" -export '/ifs/isilon_nfs' -sharetype NFS
         
-        This will loop through the folderlist.txt and create fileset templates, filesets, and enroll isln01:/operations/{folder} 
+        This will loop through the folderlist.txt and create fileset templates, filesets, and enroll isln01:/ifs/isilon_nfs/{folder} 
         into the SLA "Production Azure Archive" 
     #>
 
