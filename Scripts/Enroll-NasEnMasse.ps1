@@ -33,7 +33,7 @@ param(
 $inputfile = Get-Content $inputfile
 foreach ($i in $inputfile) {
     if ($ShareType = "NFS") {$includes = '/' + $i + '/*'}
-    if ($ShareType = "SMB") {$includes = '\\' + $i + '\**'}
+    if ($ShareType = "SMB") {$includes = '\' + $i + '\**'}
     if (!(Get-RubrikFilesetTemplate -Name $i)) {
         New-RubrikFilesetTemplate -Name $i -ShareType $ShareType -Includes $includes
     } else {
