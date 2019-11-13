@@ -46,59 +46,65 @@ function Add-RubrikVcenter {
 
 function createrbkrole {
     $Rubrik_Privileges = @(
-        'Datastore.AllocateSpace'
-        'Datastore.Browse'
-        'Datastore.Config'
-        'Datastore.Delete'
-        'Datastore.FileManagement'
-        'Datastore.Move'
-        'Global.DisableMethods'
-        'Global.EnableMethods'
-        'Global.Licenses'
-        'Host.Config.Storage'
-        'Network.Assign'
-        'Resource.AssignVMToPool'
-        'Sessions.TerminateSession'
-        'Sessions.ValidateSession'
-        'System.Anonymous'
-        'System.Read'
-        'System.View'
-        'VirtualMachine.Config.AddExistingDisk'
-        'VirtualMachine.Config.AddNewDisk'
-        'VirtualMachine.Config.AdvancedConfig'
-        'VirtualMachine.Config.ChangeTracking'
-        'VirtualMachine.Config.DiskLease'
-        'VirtualMachine.Config.Rename'
-        'VirtualMachine.Config.Resource'
-        'VirtualMachine.Config.Settings'
-        'VirtualMachine.Config.SwapPlacement'
-        'VirtualMachine.GuestOperations.Execute'
-        'VirtualMachine.GuestOperations.Modify'
-        'VirtualMachine.GuestOperations.Query'
-        'VirtualMachine.Interact.AnswerQuestion'
-        'VirtualMachine.Interact.Backup'
-        'VirtualMachine.Interact.DeviceConnection'
-        'VirtualMachine.Interact.GuestControl'
-        'VirtualMachine.Interact.PowerOff'
-        'VirtualMachine.Interact.PowerOn'
-        'VirtualMachine.Interact.Reset'
-        'VirtualMachine.Interact.Suspend'
-        'VirtualMachine.Interact.ToolsInstall'
-        'VirtualMachine.Inventory.Create'
-        'VirtualMachine.Inventory.Delete'
-        'VirtualMachine.Inventory.Move'
-        'VirtualMachine.Inventory.Register'
-        'VirtualMachine.Inventory.Unregister'
-        'VirtualMachine.Provisioning.DiskRandomAccess'
-        'VirtualMachine.Provisioning.DiskRandomRead'
-        'VirtualMachine.Provisioning.GetVmFiles'
-        'VirtualMachine.Provisioning.PutVmFiles'
-        'VirtualMachine.State.CreateSnapshot'
-        'VirtualMachine.State.RemoveSnapshot'
-        'VirtualMachine.State.RenameSnapshot'
-        'VirtualMachine.State.RevertToSnapshot'
+        "Cryptographer.Access"
+        "Datastore.AllocateSpace"
+        "Datastore.Browse"
+        "Datastore.Config"
+        "Datastore.Delete"
+        "Datastore.FileManagement"
+        "Datastore.Move"
+        "Global.DisableMethods"
+        "Global.EnableMethods"
+        "Global.Licenses"
+        "Host.Config.Storage"
+        "Network.Assign"
+        "Resource.AssignVMToPool"
+        "Sessions.TerminateSession"
+        "Sessions.ValidateSession"
+        "System.Anonymous"
+        "System.Read"
+        "System.View"
+        "VirtualMachine.Config.AddExistingDisk"
+        "VirtualMachine.Config.AddNewDisk"
+        "VirtualMachine.Config.AdvancedConfig"
+        "VirtualMachine.Config.ChangeTracking"
+        "VirtualMachine.Config.DiskLease"
+        "VirtualMachine.Config.EditDevice"
+        "VirtualMachine.Config.RemoveDisk"
+        "VirtualMachine.Config.Rename"
+        "VirtualMachine.Config.Resource"
+        "VirtualMachine.Config.SwapPlacement"
+        "VirtualMachine.GuestOperations.Execute"
+        "VirtualMachine.GuestOperations.Modify"
+        "VirtualMachine.GuestOperations.Query"
+        "VirtualMachine.Interact.AnswerQuestion"
+        "VirtualMachine.Interact.Backup"
+        "VirtualMachine.Interact.DeviceConnection"
+        "VirtualMachine.Interact.GuestControl"
+        "VirtualMachine.Interact.PowerOff"
+        "VirtualMachine.Interact.PowerOn"
+        "VirtualMachine.Interact.Reset"
+        "VirtualMachine.Interact.Suspend"
+        "VirtualMachine.Interact.ToolsInstall"
+        "VirtualMachine.Inventory.Create"
+        "VirtualMachine.Inventory.Delete"
+        "VirtualMachine.Inventory.Move"
+        "VirtualMachine.Inventory.Register"
+        "VirtualMachine.Inventory.Unregister"
+        "VirtualMachine.Provisioning.DiskRandomAccess"
+        "VirtualMachine.Provisioning.DiskRandomRead"
+        "VirtualMachine.Provisioning.GetVmFiles"
+        "VirtualMachine.Provisioning.PutVmFiles"
+        "VirtualMachine.State.CreateSnapshot"
+        "VirtualMachine.State.RemoveSnapshot"
+        "VirtualMachine.State.RenameSnapshot"
+        "VirtualMachine.State.RevertToSnapshot"
     )
     $access = Get-VIPrivilege -id $Rubrik_Privileges
     if (!(Get-VIRole -Name 'RubrikVcenter')) {
-        New-VIRole -Name RubrikVcenter -Privilege $access}
+        New-VIRole -Name RubrikVcenter -Privilege $access
+    } else {
+        Set-VIRole -Name 'RubrikVcenter' -AddPrivilege $Rubrik_Privileges
+    }
 }
+
