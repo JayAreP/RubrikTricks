@@ -1,8 +1,8 @@
 param(
     [parameter(mandatory)]
     [string]$server,
-    [parameter(mandatory)]
-    [string]$instance,
+    [parameter()]
+    [string]$instance = "MSSQLServer",
     [parameter()]
     [array]$databases,
     [parameter(mandatory)]
@@ -10,7 +10,12 @@ param(
     [parameter()]
     [bool]$IsAlwaysOn = $false,
     [parameter()]
-    [switch]$generateJSONTemplate
+    [switch]$generateJSONTemplate,
+    [parameter()]
+    [switch]$includeSysDBs,
+    [parameter()]
+    [switch]$logOnly
+
 )
 
 if ($generateJSONTemplate) {
@@ -55,9 +60,9 @@ $sysdbs = @(
 
 # declare the instance
 if ($IsAlwaysOn -eq $true) {
-    $rbSQLInstance = Get-RubrikAvailabilityGroup -GroupName $server
+    $rbSQLInstance = Get-RubrikAvailabilityGroup -GroupName $server 
 } else {
-    $rbSQLInstance = Get-RubrikSQLInstance -Hostname $server
+    $rbSQLInstance = Get-RubrikSQLInstance -Hostname $server -ServerInstance $instance
 }
 
 # declare the databases. If no -databases list was provided we'll grab all of them
@@ -70,9 +75,25 @@ if (!$databases) {
     }
 }
 
+# Check for the -logOnly switch and perform log backups on all desired user databases, then exit the script. 
+if ($logOnly) {
+    foreach ($rdb in $rbDBs) {
+        if (!($sysdbs -contains $rdb.name)) {
+            New-RubrikLogBackup -id $rdb.id 
+        }
+    }
+    Exit
+}
+
 # Check that the databases are not part of the $sysdbs and if so, perform backup against the desired SLA
-foreach ($rdb in $rbDBs) {
-    if (!($sysdbs -contains $rdb.name)) {
+if (!$includeSysDBs) {
+    foreach ($rdb in $rbDBs) {
+        if (!($sysdbs -contains $rdb.name)) {
+            New-RubrikSnapshot -id $rdb.id -SLA $SLA
+        }
+    }
+} else {
+    foreach ($rdb in $rbDBs) {
         New-RubrikSnapshot -id $rdb.id -SLA $SLA
     }
 }
