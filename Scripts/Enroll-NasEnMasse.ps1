@@ -30,14 +30,15 @@ param(
 
 # Create NAS Fileset Templates
 
-$inputfile = Get-Content $inputfile
-foreach ($i in $inputfile) {
+$inputlist = Get-Content $inputfile
+foreach ($i in $inputlist) {
+    $tmplatename = $NASHost + "-" + $i
     if ($ShareType = "NFS") {$includes = '/' + $i + '/*'}
     if ($ShareType = "SMB") {$includes = '\' + $i + '\**'}
-    if (!(Get-RubrikFilesetTemplate -Name $i)) {
-        New-RubrikFilesetTemplate -Name $i -ShareType $ShareType -Includes $includes
+    if (!(Get-RubrikFilesetTemplate -Name $tmplatename)) {
+        New-RubrikFilesetTemplate -Name $tmplatename -ShareType $ShareType -Includes $includes
     } else {
-        Write-Host Fileset Template $i already exists. Skipping.
+        Write-Host Fileset Template $tmplatename already exists. Skipping.
     }
 }
 
@@ -50,15 +51,21 @@ try {
 }
 
 try {
+    $rubriknas = New-RubrikNASShare -HostID $rubrikhost.id -ShareType $ShareType -ExportPoint $share
     # Suss out a better way to specifcy the precise share
-    $rubriknas = Get-RubrikNASShare -HostName $rubrikhost.name -exportPoint $share
 } catch {
-    return $error[0]
+    $rubriknas = Get-RubrikNASShare -HostName $rubrikhost.name -exportPoint $share
 }
 
+
 # Enroll Host in SLA
-foreach ($i in $inputfile) {
-    $template = Get-RubrikFilesetTemplate -Name $i
-    $rubrikfileset = New-RubrikFileset -TemplateID $template.id -hostID $rubriknas.id
+foreach ($i in $inputlist) {
+    $tmplatename = $NASHost + "-" + $i
+    $template = Get-RubrikFilesetTemplate -Name $tmplatename
+    try {
+        $rubrikfileset = New-RubrikFileset -TemplateID $template.id -ShareID $rubriknas.id   
+    } catch {
+        $rubrikfileset = Get-RubrikFileset -TemplateID $template.id -ShareID $rubriknas.id 
+    }
     $rubrikfileset | Protect-RubrikFileset -SLA $SLA -Confirm:0
 }
