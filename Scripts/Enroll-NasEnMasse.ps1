@@ -36,6 +36,7 @@ foreach ($i in $inputlist) {
     if ($ShareType = "NFS") {$includes = '/' + $i + '/*'}
     if ($ShareType = "SMB") {$includes = '\' + $i + '\**'}
     if (!(Get-RubrikFilesetTemplate -Name $tmplatename)) {
+        Write-Host -ForegroundColor yellow Creating Fileset Template $tmplatename
         New-RubrikFilesetTemplate -Name $tmplatename -ShareType $ShareType -Includes $includes
     } else {
         Write-Host Fileset Template $tmplatename already exists. Skipping.
@@ -45,6 +46,7 @@ foreach ($i in $inputlist) {
 # Generate Host context
 
 try {
+    Write-Host -ForegroundColor yellow Gathering NAS Host information. 
     $rubrikhost = Get-RubrikHost -name $NASHost
 } catch {
     return $error[0]
@@ -61,6 +63,7 @@ try {
 # Enroll Host in SLA
 foreach ($i in $inputlist) {
     $tmplatename = $NASHost + "-" + $i
+    Write-Host -ForegroundColor yellow Adding $tmplatename to $SLA
     $template = Get-RubrikFilesetTemplate -Name $tmplatename
     try {
         $rubrikfileset = New-RubrikFileset -TemplateID $template.id -ShareID $rubriknas.id   
