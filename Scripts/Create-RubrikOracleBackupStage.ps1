@@ -38,18 +38,6 @@ if (Get-RubrikManagedVolume -Name $managedVolumeName) {
     New-RubrikManagedVolume -Name $managedVolumeName -Channels $channels -VolumeSize $size 
 }
 
-<#
-function Get-RubrikFloatingIPAddress {
-    Invoke-RubrikRESTCall -api internal -endpoint 'node_management/cluster_ip' -Method GET
-}
-
-$rfips = Get-RubrikFloatingIPAddress
-if ($rfips.count -lt $channels) {
-    write-host -ForegroundColor Yellow Not enough floating IPs are available to service the number of Channels. 
-    exit
-}
-#>
-
 # put a wait here
 
 $RMVs = Get-RubrikManagedVolume -Name $managedVolumeName
@@ -84,7 +72,7 @@ foreach ($i in $patharray) {
 
 
 if ($sla) {
-    if (Get-RubrikSLA -Name $sla) {
+    if (Get-RubrikSLA -Name $sla -PrimaryClusterID local) {
         $rsla = get-rubriksla -Name $sla
         $rid = $rsla.id
         $jsonstring = "{`"managedIds`": [`"$rmvid`"]}"
