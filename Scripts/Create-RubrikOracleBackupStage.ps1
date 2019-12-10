@@ -20,7 +20,10 @@ Creates the managed volume and generates the fstab entries for the linux host.
 
 ./Create-RubrikOracleBackups.ps1 -managedVolumeName ORMV01 -channels 2 -size 20gb -localpath '/mnt/ormv01' -sla 'Oracle SLA'
 
-Creates file named fstab-additions.txt that contains a copy/paste set of fstab entries for the Linux Oracle host
+Creates file named fstab-additions.txt that contains a copy/paste set of fstab entries for the Linux Oracle host. 
+Also creates a text file that includes the 'curl -k -X...' commands to post to the appropriate URI to open/close the MVs, should you 
+require them.
+
 
 #>
 if ($localpath) {
