@@ -8,6 +8,11 @@ param(
     [parameter()]
     [string]$localpath,
     [parameter()]
+    [string]$subnet,
+    [ValidateSet('Oracle', 'OracleIncremental', 'MsSql', 'SapHana', 'SapHanaLog', 'MySql', 'PostgreSql', 'RecoverX', IgnoreCase = $false)]
+    [parameter()]
+    [string]$applicationTag = "Oracle",
+    [parameter()]
     [string]$sla
 )
 
@@ -38,7 +43,11 @@ if ($localpath) {
 if (Get-RubrikManagedVolume -Name $managedVolumeName) {
     Write-Host -ForegroundColor green $managedVolumeName already exists, no need to re-create... `n
 } else {
-    New-RubrikManagedVolume -Name $managedVolumeName -Channels $channels -VolumeSize $size 
+    if ($subnet) {
+        New-RubrikManagedVolume -Name $managedVolumeName -Channels $channels -VolumeSize $size -applicationTag $applicationTag -Subnet $subnet
+    } else {
+        New-RubrikManagedVolume -Name $managedVolumeName -Channels $channels -VolumeSize $size -applicationTag $applicationTag
+    }
 }
 
 # put a wait here
