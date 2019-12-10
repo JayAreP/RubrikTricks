@@ -95,7 +95,7 @@ $curlstart = 'curl -k -X POST -u ' + "'username:password' " + $curlcmdURI + '/be
 $curlend = 'curl -k -X POST -u ' + "'username:password' " + $curlcmdURI + '/end_snapshot'
 
 
-Write-Host -ForegroundColor yellow "Use the following CURL URI for this volume"`n 
+Write-Host -ForegroundColor yellow "Use the following CURL URI for this volume or refer to $curlname"`n 
 $curlstart
 $curlend
 Write-Host `n`n
