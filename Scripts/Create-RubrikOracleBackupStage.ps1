@@ -103,7 +103,14 @@ $fstab | Format-Table -hidetableheaders | Out-File $fstabname
 
 $curlcmdURI = 'https://' + $Global:rubrikConnection.server + '/api/internal/managed_volume/' + $rmvid
 
-Write-Host -ForegroundColor yellow "Use the following CURL URI for this volume, or open $curlname" `n 
-$curlcmdURI 
+$curlstart = 'curl -k -X POST -u ' + "'username:password' " + $curlcmdURI + '/begin_snapshot'
+$curlend = 'curl -k -X POST -u ' + "'username:password' " + $curlcmdURI + '/end_snapshot'
+
+
+Write-Host -ForegroundColor yellow "Use the following CURL URI for this volume"`n 
+$curlstart
+$curlend
 Write-Host `n`n
-$curlcmdURI | Out-File $curlname
+$curlstart | Out-File $curlname
+$curlend | Out-File $curlname -Append
+
