@@ -31,7 +31,9 @@ param(
 # Create NAS Fileset Templates
 
 $inputlist = Get-Content $inputfile
+$inputlist = $inputlist.trim()
 foreach ($i in $inputlist) {
+    $i = $i.trimend()
     $tmplatename = $NASHost + "-" + $i
     if ($ShareType = "NFS") {$includes = '/' + $i + '/*'}
     if ($ShareType = "SMB") {$includes = '\' + $i + '\**'}
