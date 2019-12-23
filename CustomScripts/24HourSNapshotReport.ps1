@@ -49,66 +49,78 @@ $allsnaps = @()
 $AllSLAs = Get-RubrikSLA -PrimaryClusterID local
 
 # Gather VM snaps
+Write-Host -ForegroundColor green --- Gathering VMWare VM information ---
 $Objects = Get-RubrikVM -PrimaryClusterID local
 foreach ($o in $Objects) {
     $snaps = $o | Get-RubrikSnapshot -OnDemandSnapshot -Range 1 -Date $date.ToShortDateString() -ExactMatch
     if ($snaps) {
         $snaps | foreach-object {
+            Write-Host -ForegroundColor yellow "- Gathering $_.id for $o.name"
             $allsnaps += filterObject -snapID $_.id -snapable $o.id -snapDate $_.date -objectName $o.name -slaID $_.slaid -cloudState $_.cloudState
         }
     }
 }
 
 # Gather Hyper-V snaps
+Write-Host -ForegroundColor green --- Gathering Hyper-V VM information ---
 $Objects = Get-RubrikHyperVVM -PrimaryClusterID local
 foreach ($o in $Objects) {
     $snaps = $o | Get-RubrikSnapshot -OnDemandSnapshot -Range 1 -Date $date.ToShortDateString() -ExactMatch
     if ($snaps) {
         $snaps | foreach-object {
+            Write-Host -ForegroundColor yellow "- Gathering $_.id for $o.name"
             $allsnaps += filterObject -snapID $_.id -snapable $o.id -snapDate $_.date -objectName $o.name -slaID $_.slaid -cloudState $_.cloudState
         }
     }
 }
 
 # Gather SQL snaps
+Write-Host -ForegroundColor green --- Gathering SQL information ---
 $Objects = Get-RubrikDatabase -PrimaryClusterID local
 foreach ($o in $Objects) {
     $snaps = $o | Get-RubrikSnapshot -OnDemandSnapshot -Range 1 -Date $date.ToShortDateString() -ExactMatch
     if ($snaps) {
         $snaps | foreach-object {
+            Write-Host -ForegroundColor yellow "- Gathering $_.id for $o.name"
             $allsnaps += filterObject -snapID $_.id -snapable $o.id -snapDate $_.date -objectName $o.name -slaID $_.slaid -cloudState $_.cloudState
         }
     }
 }
 
 # Gather FileSet snaps
+Write-Host -ForegroundColor green --- Gathering FileSet information ---
 $Objects = Get-RubrikFileSet -PrimaryClusterID local
 foreach ($o in $Objects) {
     $snaps = $o | Get-RubrikSnapshot -OnDemandSnapshot -Range 1 -Date $date.ToShortDateString() -ExactMatch
     if ($snaps) {
         $snaps | foreach-object {
+            Write-Host -ForegroundColor yellow "- Gathering $_.id for $o.name"
             $allsnaps += filterObject -snapID $_.id -snapable $o.id -snapDate $_.date -objectName $o.name -slaID $_.slaid -cloudState $_.cloudState
         }
     }
 }
 
 # Gather MV snaps
+Write-Host -ForegroundColor green --- Gathering Manage Volume information ---
 $Objects = Get-RubrikManagedVolume -PrimaryClusterID local
 foreach ($o in $Objects) {
     $snaps = $o | Get-RubrikSnapshot -OnDemandSnapshot -Range 1 -Date $date.ToShortDateString() -ExactMatch
     if ($snaps) {
         $snaps | foreach-object {
+            Write-Host -ForegroundColor yellow "- Gathering $_.id for $o.name"
             $allsnaps += filterObject -snapID $_.id -snapable $o.id -snapDate $_.date -objectName $o.name -slaID $_.slaid -cloudState $_.cloudState
         }
     }
 }
 
 # Gather VG snaps
+Write-Host -ForegroundColor green --- Gathering Volume Group information ---
 $Objects = Get-RubrikVolumeGroup -PrimaryClusterID local
 foreach ($o in $Objects) {
     $snaps = $o | Get-RubrikSnapshot -OnDemandSnapshot -Range 1 -Date $date.ToShortDateString() -ExactMatch
     if ($snaps) {
         $snaps | foreach-object {
+            Write-Host -ForegroundColor yellow "- Gathering $_.id for $o.name"
             $allsnaps += filterObject -snapID $_.id -snapable $o.id -snapDate $_.date -objectName $o.name -slaID $_.slaid -cloudState $_.cloudState
         }
     } else {
