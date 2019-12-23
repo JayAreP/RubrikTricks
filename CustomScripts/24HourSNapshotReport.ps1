@@ -1,4 +1,6 @@
-
+param(
+    [string] $fileName = "report.csv"
+)
 # helper functions
 function getEventSeries {
     param(
@@ -113,6 +115,9 @@ foreach ($o in $Objects) {
     }
 }
 
+# Build the report array
+$report = @()
+
 # gather storage for snaps
 foreach ($snap in $allsnaps) {
     try {
@@ -135,6 +140,7 @@ foreach ($snap in $allsnaps) {
     $o | Add-Member -MemberType NoteProperty -Name 'Start Time' -Value $currentevent.startTime
     $o | Add-Member -MemberType NoteProperty -Name 'End Time' -Value $currentevent.endTime
     $o | Add-Member -MemberType NoteProperty -Name 'Duration' -Value $currentevent.duration
-    $o
-    $o | export-csv .\output.csv -notype
+    $report += $o
 }
+
+$report | Export-Csv -Path $fileName -NoTypeInformation
