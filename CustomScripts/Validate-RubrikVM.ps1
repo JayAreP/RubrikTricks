@@ -93,7 +93,7 @@ try {
     Write-Output "Gathering VMWare validation VM information..."
     $vm = get-vmguest -vm $mountName 
 } catch {
-    Write-Output No VM named $mountName could be found in vcenter.
+    Write-Output "No VM named $mountName could be found in vcenter."
     exit
 }
 $waitdate = (get-date).addminutes(5)
@@ -128,5 +128,5 @@ Get-RubrikMount -VMID $rvm.id | Remove-RubrikMount
 $filename = $mountName + '.csv'
 $o | Export-Csv -notype -Path $filename
 
-Write-Output Writing report to $filename
+Write-Output "Writing report to $filename"
 Return $o
